@@ -1,7 +1,9 @@
-import {IExecuteFunctions, INodeExecutionData, INodeType, INodeTypeDescription} from "n8n-workflow";
-const etroNode = require('etro-node');
-import {nodeDescription} from "./VideoMaker.node.options";
-import puppeteer from 'puppeteer';
+import {IExecuteFunctions, INodeExecutionData, INodeType, INodeTypeDescription} from 'n8n-workflow';
+
+import {getEditly} from './libs/editly';
+import {nodeDescription} from './VideoMaker.node.options';
+
+
 
 export class VideoMaker implements INodeType {
 	description: INodeTypeDescription = nodeDescription;
@@ -9,11 +11,10 @@ export class VideoMaker implements INodeType {
 	async execute(this: IExecuteFunctions): Promise<INodeExecutionData[][]> {
 		const items = this.getInputData();
 
-		const parameters = this.getNodeParameter('parameters', 0) as Object;
 		const movieWidth = this.getNodeParameter('width', 0) as number;
 		const movieHeight = this.getNodeParameter('height', 0) as number;
 
-		let returnData: INodeExecutionData[] = [];
+		const returnData: INodeExecutionData[] = [];
 
 		for (let i = 0; i < items.length; i++) {
 			const newItem: INodeExecutionData = {
@@ -24,51 +25,37 @@ export class VideoMaker implements INodeType {
 				},
 			};
 
-			const browser = await puppeteer.launch({
-				args: ['--no-sandbox'],
-				headless: true
-			})
-			const page = await browser.newPage()
+			const editly = await getEditly();
 
-			const movie = await new Promise((resolve, reject) => {
-				etroNode(function() {
-					const canvas = document.createElement('canvas')
-					document.body.appendChild(canvas);
-					// @ts-ignore
-					const movie = new etro.Movie({
-						canvas
-					});
-				
-					movie.width = movieWidth;
-					movie.height = movieHeight;
-
-					// @ts-ignore
-					movie.layers.push(new etro.layer.Image({
-						startTime: 0,
-						duration: 5,
-						source: new Image(),
-						sourceX: 0, // default: 0
-						sourceY: 0, // default: 0
-						sourceWidth: 400, // default: null (full width)
-						sourceHeight: 400, // default: null (full height)
-						x: 0, // default: 0
-						y: 0, // default: 0
-						width: 400, // default: null (full width)
-						height: 400, // default: null (full height)
-						opacity: 1, // default: 1
-					}))
-
-					movie.record({
-						frameRate: 30,
-						// @ts-ignore
-					}).then(window.done);
-				}, parameters, resolve, page)
+			await editly({
+				enableFfmpegLog: true,
+				outPath: '/home/node/data/audio2.mp4',
+				width: movieWidth, height: movieHeight,
+				defaults: {
+					layer: {fontPath: '/home/node/data/PatuaOne-Regular.ttf'},
+				},
+				clips: [
+					{duration: 15, layers: {type: 'title-background', text: 'Audio track'}},
+					{layers: [{type: 'image', path: '/home/node/data/1.jpg'}]},
+					{layers: [{type: 'image', path: '/home/node/data/2.jpg'}]},
+					{layers: [{type: 'fill-color', color: 'white'}, {type: 'image', path: '/home/node/data/3.jpg', resizeMode: 'contain'}]},
+					{layers: [{type: 'fill-color', color: 'white'}, {type: 'image', path: '/home/node/data/4.jpg', resizeMode: 'contain'}]},
+					{layers: [{type: 'image', path: '/home/node/data/5.jpg', resizeMode: 'cover'}]},
+					{layers: [{type: 'image', path: '/home/node/data/6.jpg', resizeMode: 'cover'}]},
+					{layers: [{type: 'image', path: '/home/node/data/1.jpg', resizeMode: 'stretch'}]},
+					{layers: [{type: 'image', path: '/home/node/data/2.jpg', resizeMode: 'stretch'}]},
+				],
+				audioNorm: {enable: true, gaussSize: 3, maxGain: 100},
+				clipsAudioVolume: 50,
+				audioTracks: [
+					{path: '/home/node/data/futuristic-beat-146661.mp3', cutFrom: 18},
+				],
 			});
 
 			// @ts-ignore
 			newItem.binary!['data'] = movie;
 
-			returnData.push(newItem)
+			returnData.push(newItem);
 		}
 
 

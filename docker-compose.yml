@@ -7,5 +7,6 @@ services:
       context: .
     volumes:
       - ./:/home/node/.n8n/custom/n8n-nodes-video-maker
+      - ./data:/home/node/data
     ports:
       - 5678:5678

@@ -30,6 +30,29 @@ RUN apk add --no-cache \
       ca-certificates \
       ttf-freefont
 
+RUN apk add --no-cache make build-base \
+    wget https://ftp.gnu.org/gnu/gcc/gcc-6.4.0/gcc-6.4.0.tar.gz \
+    tar -xzvf gcc-6.4.0.tar.gz \
+    cd gcc-6.4.0 \
+    ./contrib/download_prerequisites \
+    cd .. \
+    mkdir objdir \
+    cd objdir \
+    ./../gcc-6.4.0/configure --prefix=$HOME/GCC-6.4.0 --disable-multilib \
+    make all-gcc \
+    make all-target-libgcc \
+    make install-gcc \
+    make install-target-libgcc
+
+RUN apk add --no-cache \
+    ffmpeg \
+    xvfb \
+    make python3 g++ cairo cairo-dev giflib-dev libpng libjpeg \
+    libxext-dev python3 pkgconf libxi-dev make g++ mesa-dev \
+    libxi-dev glu-dev glew-dev pkgconfig \
+    # pillow dependencies
+    pango pango-dev jpeg-dev zlib-dev freetype-dev lcms2-dev openjpeg-dev tiff-dev tk-dev tcl-dev
+
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
     PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
