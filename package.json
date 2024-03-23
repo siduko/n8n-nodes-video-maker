@@ -47,7 +47,7 @@
     "typescript": "^5.2.2"
   },
   "dependencies": {
-    "editly": "^0.14.2",
+    "editly": "https://github.com/wisekaa03/editly#master",
     "lodash": "^4.17.21",
     "n8n-core": "*",
     "n8n-workflow": "*"

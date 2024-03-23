@@ -6,7 +6,7 @@ ARG N8N_VERSION
 RUN if [ -z "$N8N_VERSION" ] ; then echo "The N8N_VERSION argument is missing!" ; exit 1; fi
 
 ENV N8N_VERSION=${N8N_VERSION}
-ENV NODE_ENV=production
+#ENV NODE_ENV=production
 ENV N8N_RELEASE_TYPE=stable
 RUN set -eux; \
         apkArch="$(apk --print-arch)"; \
@@ -30,21 +30,8 @@ RUN apk add --no-cache \
       ca-certificates \
       ttf-freefont
 
-RUN apk add --no-cache make build-base \
-    wget https://ftp.gnu.org/gnu/gcc/gcc-6.4.0/gcc-6.4.0.tar.gz \
-    tar -xzvf gcc-6.4.0.tar.gz \
-    cd gcc-6.4.0 \
-    ./contrib/download_prerequisites \
-    cd .. \
-    mkdir objdir \
-    cd objdir \
-    ./../gcc-6.4.0/configure --prefix=$HOME/GCC-6.4.0 --disable-multilib \
-    make all-gcc \
-    make all-target-libgcc \
-    make install-gcc \
-    make install-target-libgcc
-
 RUN apk add --no-cache \
+    build-base \
     ffmpeg \
     xvfb \
     make python3 g++ cairo cairo-dev giflib-dev libpng libjpeg \
@@ -63,4 +50,7 @@ RUN \
         mkdir .n8n && \
         chown node:node .n8n
 USER node
+
+WORKDIR /home/node/.n8n/custom/n8n-nodes-video-maker
+
 ENTRYPOINT ["tini", "--", "/docker-entrypoint.sh"]

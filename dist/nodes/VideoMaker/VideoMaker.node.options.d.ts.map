@@ -1,1 +1,1 @@
-{"version":3,"file":"VideoMaker.node.options.d.ts","sourceRoot":"","sources":["../../../nodes/VideoMaker/VideoMaker.node.options.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,oBAAoB,EAAE,MAAM,cAAc,CAAC;AAKpD,eAAO,MAAM,eAAe,EAAE,oBAiC7B,CAAC"}
+{"version":3,"file":"VideoMaker.node.options.d.ts","sourceRoot":"","sources":["../../../nodes/VideoMaker/VideoMaker.node.options.ts"],"names":[],"mappings":"AAAA,OAAO,EAAkB,oBAAoB,EAAC,MAAM,cAAc,CAAC;AAcnE,eAAO,MAAM,eAAe,EAAE,oBA6K7B,CAAC"}
